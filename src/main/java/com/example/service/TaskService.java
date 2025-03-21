@@ -19,6 +19,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -30,6 +31,7 @@ public class TaskService {
     private final UserService userService;
     private final TaskMapper taskMapper;
 
+    @Transactional(readOnly = true)
     public List<TaskResponse> getAllTasks() {
         List<Task> tasks = taskRepository.findAll();
         return tasks.stream()
@@ -37,6 +39,7 @@ public class TaskService {
                 .collect(Collectors.toList());
     }
 
+    @Transactional(readOnly = true)
     public Page<TaskResponse> getTasks(TaskFilterRequest request) {
         Pageable pageable = PageRequest.of(request.page(), request.size());
         Page<Task> tasks = taskRepository.findAll(pageable);
@@ -48,6 +51,7 @@ public class TaskService {
         return new PageImpl<>(taskResponses, pageable, tasks.getTotalElements());
     }
 
+    @Transactional
     public TaskResponse getTask(Integer taskId) {
         Task task = findTaskById(taskId);
         return taskMapper.taskToDto(task);
@@ -65,6 +69,7 @@ public class TaskService {
         return taskMapper.taskToDto(task);
     }
 
+    @Transactional
     public TaskResponse updateTask(TaskRequest request) {
         Task task = findTaskById(request.taskId());
         if (request.assigneeId() != null) {
@@ -87,6 +92,7 @@ public class TaskService {
         taskRepository.delete(task);
     }
 
+    @Transactional
     public TaskResponse updateTaskStatus(StatusUpdateRequest request) {
         Task task = findTaskById(request.taskId());
         task.setStatus(Status.valueOf(request.status()));
@@ -94,6 +100,7 @@ public class TaskService {
         return taskMapper.taskToDto(task);
     }
 
+    @Transactional
     public TaskResponse updateTaskPriority(PriorityUpdateRequest request) {
         Task task = findTaskById(request.taskId());
         task.setPriority(Priority.valueOf(request.priority()));
@@ -114,6 +121,7 @@ public class TaskService {
                 .orElseThrow(() -> new EntityNotFoundException("Task with ID " + taskId + " not found"));
     }
 
+    @Transactional(readOnly = true)
     public Page<TaskResponse> getTasksByFilter(TaskFilterRequest request) {
         Pageable pageable = PageRequest.of(request.page(), request.size());
         Page<Task> tasks;
