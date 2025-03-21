@@ -2,5 +2,36 @@ spring:
   application:
     name: Task_Manager
 
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: http://localhost:8080
+
+  datasource:
+    url: jdbc:postgresql://localhost:5432/task
+    driverClassName: org.postgresql.Driver
+    username: use
+    password: password
+    platform: postgres
+    initialization-mode: always
+    continue-on-error: true
+  jpa:
+    show-sql: false
+    generate-ddl: true
+    hibernate:
+      ddl-auto: update
+    database: postgresql
+
+logging:
+  level:
+    root: INFO
+    org.springframework.cloud: INFO
+    org.springframework.web: INFO
+
 server:
   port: 8080
+
+jwt:
+  secret: /8iwwdvbEUEfqDU+KEscNMYMonFAqq9424iMwlS1UE4=
+  lifetime: 3600000
